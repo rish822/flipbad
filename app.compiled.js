@@ -1,26 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>FlipBad 🏸</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#06040c;font-family:'Space Grotesk','Inter',system-ui,sans-serif}
-  input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1)}
-  input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(1)}
-  ::-webkit-scrollbar{width:4px;height:4px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3);border-radius:4px}
-</style>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-</head>
-<body>
-<div id="root"></div>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script>
 /** @jsxRuntime classic */
 const {
   useState,
@@ -2794,6 +2771,3 @@ function ScoreCtrl({
   }, "+")));
 }
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
-</script>
-</body>
-</html>
