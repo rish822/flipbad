@@ -596,8 +596,7 @@ function HomeScreen({
       alignItems: "center",
       justifyContent: "center",
       padding: "0 20px",
-      position: "relative",
-      overflow: "hidden"
+      position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1097,7 +1096,8 @@ function PlayerDropdown({
       boxShadow: "0 8px 32px rgba(0,0,0,.7)",
       overflow: "hidden",
       maxHeight: "min(320px, 50vh)",
-      overflowY: "auto"
+      overflowY: "auto",
+      WebkitOverflowScrolling: "touch"
     }
   }, /*#__PURE__*/React.createElement("div", {
     onClick: () => {

@@ -6,6 +6,7 @@
 <title>FlipBad 🏸</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
   body{background:#06040c;font-family:'Space Grotesk','Inter',system-ui,sans-serif}
   input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1)}
   input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(1)}
@@ -919,8 +920,7 @@ function HomeScreen({
       alignItems: "center",
       justifyContent: "center",
       padding: "0 20px",
-      position: "relative",
-      overflow: "hidden"
+      position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1420,7 +1420,8 @@ function PlayerDropdown({
       boxShadow: "0 8px 32px rgba(0,0,0,.7)",
       overflow: "hidden",
       maxHeight: "min(320px, 50vh)",
-      overflowY: "auto"
+      overflowY: "auto",
+      WebkitOverflowScrolling: "touch"
     }
   }, /*#__PURE__*/React.createElement("div", {
     onClick: () => {
@@ -3205,14 +3206,19 @@ function ScoreCtrl({
 <script>
 (function(){
   function sendHeight(){
-    const h = document.documentElement.scrollHeight || document.body.scrollHeight;
-    window.parent.postMessage({isStreamlitMessage:true, type:'SET_FRAME_HEIGHT', height:h}, '*');
+    const h = Math.max(
+      document.body.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.scrollHeight
+    );
+    window.parent.postMessage({isStreamlitMessage:true, type:'SET_FRAME_HEIGHT', height:h + 40}, '*');
   }
   window.addEventListener('load', sendHeight);
   new MutationObserver(sendHeight).observe(document.body, {childList:true, subtree:true, attributes:true});
   window.addEventListener('resize', sendHeight);
   setTimeout(sendHeight, 300);
-  setTimeout(sendHeight, 1000);
+  setTimeout(sendHeight, 800);
+  setTimeout(sendHeight, 2000);
 })();
 </script>
 </body>
