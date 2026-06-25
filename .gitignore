@@ -5,4 +5,3 @@ dist/
 .env
 .env.local
 flipbad_standalone.html
-streamlit_app.py
