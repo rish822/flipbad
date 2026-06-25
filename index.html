@@ -328,18 +328,20 @@ const {
 } = React;
 
 // ── storage helpers ──────────────────────────────────────────────
+function _nameStore() {
+  try { return window.name ? JSON.parse(window.name) : {}; } catch { return {}; }
+}
+function _nameSet(store) {
+  try { window.name = JSON.stringify(store); } catch {}
+}
 function load(key, def) {
-  try {
-    const v = localStorage.getItem(key);
-    return v ? JSON.parse(v) : def;
-  } catch {
-    return def;
-  }
+  try { const v = localStorage.getItem(key); if (v != null) return JSON.parse(v); } catch {}
+  const ns = _nameStore(); if (key in ns) return ns[key];
+  return def;
 }
 function save(key, val) {
-  try {
-    localStorage.setItem(key, JSON.stringify(val));
-  } catch {}
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+  const ns = _nameStore(); ns[key] = val; _nameSet(ns);
 }
 
 // ── constants ────────────────────────────────────────────────────
