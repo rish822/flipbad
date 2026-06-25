@@ -962,7 +962,9 @@ function PlayerDropdown({
   placeholder = "Select player"
 }) {
   const [open, setOpen] = useState(false);
+  const [dropRect, setDropRect] = useState(null);
   const ref = useRef();
+  const btnRef = useRef();
   useEffect(() => {
     function click(e) {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
@@ -972,13 +974,21 @@ function PlayerDropdown({
   }, []);
   const selected = registry.find(p => p.id === value);
   const options = registry.filter(p => !exclude.includes(p.id) || p.id === value);
+  function toggleOpen() {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setDropRect(r);
+    }
+    setOpen(o => !o);
+  }
   return /*#__PURE__*/React.createElement("div", {
     ref: ref,
     style: {
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => setOpen(o => !o),
+    ref: btnRef,
+    onClick: toggleOpen,
     style: {
       ...Sty.input,
       cursor: "pointer",
@@ -1000,10 +1010,10 @@ function PlayerDropdown({
     }
   }, open ? "▲" : "▼")), open && /*#__PURE__*/React.createElement("div", {
     style: {
-      position: "absolute",
-      top: "calc(100% + 4px)",
-      left: 0,
-      right: 0,
+      position: "fixed",
+      top: dropRect ? dropRect.bottom + 4 : 0,
+      left: dropRect ? dropRect.left : 0,
+      width: dropRect ? dropRect.width : "auto",
       zIndex: 9999,
       background: P.bg2,
       border: `1px solid ${P.border}`,
