@@ -3095,5 +3095,20 @@ function ScoreCtrl({
 }
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
 </script>
+<script>
+// Auto-resize Streamlit iframe to fit content
+(function(){
+  function sendHeight(){
+    const h = document.documentElement.scrollHeight || document.body.scrollHeight;
+    window.parent.postMessage({isStreamlitMessage:true, type:'SET_FRAME_HEIGHT', height:h}, '*');
+  }
+  // Send on load and whenever DOM changes
+  window.addEventListener('load', sendHeight);
+  new MutationObserver(sendHeight).observe(document.body, {childList:true, subtree:true, attributes:true});
+  window.addEventListener('resize', sendHeight);
+  setTimeout(sendHeight, 300);
+  setTimeout(sendHeight, 1000);
+})();
+</script>
 </body>
 </html>

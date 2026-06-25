@@ -18,4 +18,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 html = pathlib.Path(__file__).parent / "index.html"
-st.components.v1.html(html.read_text(), height=900, scrolling=True)
+st.components.v1.html(html.read_text(), height=700, scrolling=False)
