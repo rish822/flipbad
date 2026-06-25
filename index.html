@@ -346,15 +346,17 @@ function load(key, def) {
   return key in _cache ? _cache[key] : def;
 }
 const _saveTimers = {};
+const _touched = new Set();
 function save(key, val) {
   _cache[key] = val;
+  _touched.add(key);
   if (!_fbdb) return;
   clearTimeout(_saveTimers[key]);
   _saveTimers[key] = setTimeout(() => {
     _fbdb.collection('flipbad').doc('shared')
-      .set({[key]: val, [`_by_${key}`]: _SESSION}, {merge: true})
+      .set({[key]: val}, {merge: true})
       .catch(console.error);
-  }, 1200);
+  }, 800);
 }
 
 // ── constants ────────────────────────────────────────────────────
@@ -608,13 +610,13 @@ function App() {
   useEffect(() => {
     function onRemote(e) {
       const d = e.detail;
-      function mine(key) { return d[`_by_${key}`] === _SESSION; }
-      if ('fb-registry' in d && !mine('fb-registry')) setRegistry(d['fb-registry']);
-      if ('fb-tname' in d && !mine('fb-tname')) setTName(d['fb-tname']);
-      if ('fb-format' in d && !mine('fb-format')) setFormat(d['fb-format']);
-      if ('fb-teams' in d && !mine('fb-teams')) setTeams(d['fb-teams']);
-      if ('fb-matches' in d && !mine('fb-matches')) setMatches(d['fb-matches']);
-      if ('fb-tinputs' in d && !mine('fb-tinputs')) setTeamInputs(d['fb-tinputs']);
+      // Only apply remote update if we haven't touched that key locally this session
+      if ('fb-registry' in d && !_touched.has('fb-registry')) setRegistry(d['fb-registry']);
+      if ('fb-tname' in d && !_touched.has('fb-tname')) setTName(d['fb-tname']);
+      if ('fb-format' in d && !_touched.has('fb-format')) setFormat(d['fb-format']);
+      if ('fb-teams' in d && !_touched.has('fb-teams')) setTeams(d['fb-teams']);
+      if ('fb-matches' in d && !_touched.has('fb-matches')) setMatches(d['fb-matches']);
+      if ('fb-tinputs' in d && !_touched.has('fb-tinputs')) setTeamInputs(d['fb-tinputs']);
     }
     window.addEventListener('fb-remote', onRemote);
     return () => window.removeEventListener('fb-remote', onRemote);
@@ -3208,7 +3210,6 @@ function ScoreCtrl({
 })();
 </script>
 <script>
-// Tell Streamlit to size iframe to the window height
 (function(){
   var h = window.innerHeight || 750;
   window.parent.postMessage({isStreamlitMessage:true, type:'SET_FRAME_HEIGHT', height:h}, '*');
