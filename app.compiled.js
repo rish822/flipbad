@@ -143,15 +143,17 @@ const MEDALS = ["🥇", "🥈", "🥉"];
 const F = "'Space Grotesk','Inter',system-ui,sans-serif";
 const Sty = {
   page: {
-    minHeight: "100vh",
+    height: "100vh",
+    overflowY: "auto",
+    WebkitOverflowScrolling: "touch",
     background: P.bg0,
     fontFamily: F
   },
   wrap: {
     width: "100%",
-    maxWidth: 600,
+    maxWidth: 480,
     margin: "0 auto",
-    padding: "0 14px 80px"
+    padding: "0 16px 100px"
   },
   card: {
     background: P.bg1,
@@ -588,14 +590,16 @@ function HomeScreen({
   }).sort((a,b) => b.wins - a.wins).slice(0,3) : [];
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      minHeight: "100vh",
+      height: "100vh",
+      overflowY: "auto",
+      WebkitOverflowScrolling: "touch",
       background: P.bg0,
       fontFamily: F,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      padding: "0 20px",
+      padding: "24px 20px",
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {

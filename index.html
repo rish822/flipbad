@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>FlipBad 🏸</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-  body{background:#06040c;font-family:'Space Grotesk','Inter',system-ui,sans-serif}
+  html,body{width:100%;height:100%;overflow:hidden}
+  body{background:#06040c;font-family:'Space Grotesk','Inter',system-ui,sans-serif;-webkit-text-size-adjust:100%}
   input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1)}
   input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(1)}
   ::-webkit-scrollbar{width:4px;height:4px}
@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 </head>
 <body>
-<div id="root"></div>
+<div id="root" style="height:100%;"></div>
 <script>/**
  * @license React
  * react.production.min.js
@@ -467,15 +467,17 @@ const MEDALS = ["🥇", "🥈", "🥉"];
 const F = "'Space Grotesk','Inter',system-ui,sans-serif";
 const Sty = {
   page: {
-    minHeight: "100vh",
+    height: "100vh",
+    overflowY: "auto",
+    WebkitOverflowScrolling: "touch",
     background: P.bg0,
     fontFamily: F
   },
   wrap: {
     width: "100%",
-    maxWidth: 600,
+    maxWidth: 480,
     margin: "0 auto",
-    padding: "0 14px 80px"
+    padding: "0 16px 100px"
   },
   card: {
     background: P.bg1,
@@ -912,14 +914,16 @@ function HomeScreen({
   }).sort((a,b) => b.wins - a.wins).slice(0,3) : [];
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      minHeight: "100vh",
+      height: "100vh",
+      overflowY: "auto",
+      WebkitOverflowScrolling: "touch",
       background: P.bg0,
       fontFamily: F,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      padding: "0 20px",
+      padding: "24px 20px",
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -3204,21 +3208,13 @@ function ScoreCtrl({
 })();
 </script>
 <script>
+// Tell Streamlit to size iframe to the window height
 (function(){
-  function sendHeight(){
-    const h = Math.max(
-      document.body.scrollHeight,
-      document.body.offsetHeight,
-      document.documentElement.scrollHeight
-    );
-    window.parent.postMessage({isStreamlitMessage:true, type:'SET_FRAME_HEIGHT', height:h + 40}, '*');
-  }
-  window.addEventListener('load', sendHeight);
-  new MutationObserver(sendHeight).observe(document.body, {childList:true, subtree:true, attributes:true});
-  window.addEventListener('resize', sendHeight);
-  setTimeout(sendHeight, 300);
-  setTimeout(sendHeight, 800);
-  setTimeout(sendHeight, 2000);
+  var h = window.innerHeight || 750;
+  window.parent.postMessage({isStreamlitMessage:true, type:'SET_FRAME_HEIGHT', height:h}, '*');
+  window.addEventListener('resize', function(){
+    window.parent.postMessage({isStreamlitMessage:true, type:'SET_FRAME_HEIGHT', height:window.innerHeight}, '*');
+  });
 })();
 </script>
 </body>
