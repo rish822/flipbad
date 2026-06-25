@@ -328,19 +328,17 @@ const {
 } = React;
 
 // ── storage helpers ──────────────────────────────────────────────
-const _mem = {};
 function load(key, def) {
   try {
-    const store = (typeof sessionStorage !== "undefined" && sessionStorage) || (typeof localStorage !== "undefined" && localStorage);
-    const v = store ? store.getItem(key) : null;
-    return v ? JSON.parse(v) : (_mem[key] !== undefined ? _mem[key] : def);
-  } catch { return _mem[key] !== undefined ? _mem[key] : def; }
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : def;
+  } catch {
+    return def;
+  }
 }
 function save(key, val) {
-  _mem[key] = val;
   try {
-    const store = (typeof sessionStorage !== "undefined" && sessionStorage) || (typeof localStorage !== "undefined" && localStorage);
-    if (store) store.setItem(key, JSON.stringify(val));
+    localStorage.setItem(key, JSON.stringify(val));
   } catch {}
 }
 
@@ -1327,7 +1325,7 @@ function PlayerDropdown({
       top: "calc(100% + 4px)",
       left: 0,
       right: 0,
-      zIndex: 99,
+      zIndex: 9999,
       background: P.bg2,
       border: `1px solid ${P.border}`,
       borderRadius: 10,
@@ -1637,7 +1635,7 @@ function TournamentSetup({
       background: "rgba(236,72,153,.1)",
       border: `1px solid ${P.borderB}`,
       borderRadius: 10,
-      overflow: "hidden",
+      overflow: "visible",
       marginBottom: 8
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -3096,13 +3094,11 @@ function ScoreCtrl({
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
 </script>
 <script>
-// Auto-resize Streamlit iframe to fit content
 (function(){
   function sendHeight(){
     const h = document.documentElement.scrollHeight || document.body.scrollHeight;
     window.parent.postMessage({isStreamlitMessage:true, type:'SET_FRAME_HEIGHT', height:h}, '*');
   }
-  // Send on load and whenever DOM changes
   window.addEventListener('load', sendHeight);
   new MutationObserver(sendHeight).observe(document.body, {childList:true, subtree:true, attributes:true});
   window.addEventListener('resize', sendHeight);

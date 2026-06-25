@@ -1004,7 +1004,7 @@ function PlayerDropdown({
       top: "calc(100% + 4px)",
       left: 0,
       right: 0,
-      zIndex: 99,
+      zIndex: 9999,
       background: P.bg2,
       border: `1px solid ${P.border}`,
       borderRadius: 10,
@@ -1314,7 +1314,7 @@ function TournamentSetup({
       background: "rgba(236,72,153,.1)",
       border: `1px solid ${P.borderB}`,
       borderRadius: 10,
-      overflow: "hidden",
+      overflow: "visible",
       marginBottom: 8
     }
   }, /*#__PURE__*/React.createElement("div", {
