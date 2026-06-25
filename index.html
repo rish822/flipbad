@@ -1417,7 +1417,9 @@ function PlayerDropdown({
       border: `1px solid ${P.border}`,
       borderRadius: 10,
       boxShadow: "0 8px 32px rgba(0,0,0,.7)",
-      overflow: "hidden"
+      overflow: "hidden",
+      maxHeight: "min(320px, 50vh)",
+      overflowY: "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
     onClick: () => {
