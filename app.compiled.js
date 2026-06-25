@@ -21,13 +21,16 @@ const _FBCFG = {
 function load(key, def) {
   return key in _cache ? _cache[key] : def;
 }
+const _saveTimers = {};
 function save(key, val) {
   _cache[key] = val;
-  if (_fbdb) {
+  if (!_fbdb) return;
+  clearTimeout(_saveTimers[key]);
+  _saveTimers[key] = setTimeout(() => {
     _fbdb.collection('flipbad').doc('shared')
       .set({[key]: val, _by: _SESSION, _at: Date.now()}, {merge: true})
       .catch(console.error);
-  }
+  }, 1200);
 }
 
 // ── constants ────────────────────────────────────────────────────
@@ -480,7 +483,11 @@ function App() {
     onQuick: () => setScreen("quickmatch-setup"),
     onPlayers: () => setScreen("players"),
     hasTournament: teams.length > 0,
-    onResumeTournament: () => setScreen("tournament-main")
+    onResumeTournament: () => setScreen("tournament-main"),
+    tName: tName,
+    teams: teams,
+    matches: matches,
+    registry: registry
   }), screen === "players" && /*#__PURE__*/React.createElement(PlayerRegistry, {
     registry: registry,
     onBack: goHome,
@@ -546,9 +553,23 @@ function HomeScreen({
   onQuick,
   onPlayers,
   hasTournament,
-  onResumeTournament
+  onResumeTournament,
+  tName,
+  teams,
+  matches,
+  registry
 }) {
   const AG = P.accentG;
+  // Compute live match data for home screen
+  const liveMatch = matches && matches.find(m => m.status === "live");
+  const completedMatches = matches ? matches.filter(m => m.status === "completed") : [];
+  const upcomingMatches = matches ? matches.filter(m => m.status === "upcoming") : [];
+  // Standings: wins per team
+  const standings = teams ? teams.map(t => {
+    const wins = completedMatches.filter(m => m.winner === t.id).length;
+    const played = completedMatches.filter(m => m.team1 === t.id || m.team2 === t.id).length;
+    return { ...t, wins, played };
+  }).sort((a,b) => b.wins - a.wins).slice(0,3) : [];
   return /*#__PURE__*/React.createElement("div", {
     style: {
       minHeight: "100vh",
@@ -675,7 +696,37 @@ function HomeScreen({
       background: `linear-gradient(90deg,transparent,${P.accent},transparent)`,
       margin: "20px 0 26px"
     }
-  }), /*#__PURE__*/React.createElement("div", {
+  }),
+  hasTournament && matches && matches.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style:{width:"100%",maxWidth:310,marginBottom:16,marginTop:4,background:"rgba(109,40,217,.13)",border:"1px solid rgba(168,85,247,.25)",borderRadius:14,padding:"14px 16px"}
+  },
+    /*#__PURE__*/React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}},
+      /*#__PURE__*/React.createElement("span", {style:{color:"#a855f7",fontWeight:700,fontSize:13}}, "🏆 ", tName || "Tournament"),
+      liveMatch && /*#__PURE__*/React.createElement("span", {style:{background:"rgba(236,72,153,.2)",color:"#f472b6",fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:99}}, "🔴 LIVE")
+    ),
+    liveMatch && teams && /*#__PURE__*/React.createElement("div", {style:{background:"rgba(236,72,153,.08)",borderRadius:10,padding:"10px 12px",marginBottom:8}},
+      /*#__PURE__*/React.createElement("div", {style:{fontSize:10,color:"#a78bfa",fontWeight:700,marginBottom:5,letterSpacing:".05em"}}, "LIVE NOW"),
+      /*#__PURE__*/React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:6}},
+        /*#__PURE__*/React.createElement("span", {style:{color:"#fff",fontWeight:700,fontSize:12,flex:1}}, (teams.find(t=>t.id===liveMatch.team1)||{}).name||"Team 1"),
+        /*#__PURE__*/React.createElement("span", {style:{color:"#ec4899",fontWeight:900,fontSize:15,padding:"0 6px"}},
+          (liveMatch.sets||[]).reduce((a,s)=>a+(s.t1>s.t2?1:0),0)," — ",(liveMatch.sets||[]).reduce((a,s)=>a+(s.t2>s.t1?1:0),0)),
+        /*#__PURE__*/React.createElement("span", {style:{color:"#fff",fontWeight:700,fontSize:12,flex:1,textAlign:"right"}}, (teams.find(t=>t.id===liveMatch.team2)||{}).name||"Team 2")
+      )
+    ),
+    standings.length > 0 && /*#__PURE__*/React.createElement("div", null,
+      /*#__PURE__*/React.createElement("div", {style:{fontSize:10,color:"#7c3aed",fontWeight:700,letterSpacing:".07em",marginBottom:5}}, "STANDINGS"),
+      standings.map((t,i) => /*#__PURE__*/React.createElement("div", {
+        key:t.id,style:{display:"flex",alignItems:"center",gap:6,padding:"3px 0",borderBottom:i<standings.length-1?"1px solid rgba(168,85,247,.1)":"none"}
+      },
+        /*#__PURE__*/React.createElement("span", {style:{fontSize:11,width:18}}, i===0?"🥇":i===1?"🥈":"🥉"),
+        /*#__PURE__*/React.createElement("span", {style:{color:"#e9d5ff",fontSize:12,flex:1}}, t.name),
+        /*#__PURE__*/React.createElement("span", {style:{color:"#a855f7",fontSize:11,fontWeight:700}}, t.wins,"W")
+      ))
+    ),
+    /*#__PURE__*/React.createElement("div", {style:{fontSize:10,color:"rgba(167,139,250,.45)",marginTop:6}},
+      completedMatches.length," / ",matches.length," matches done")
+  ),
+  /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       maxWidth: 310,
@@ -2803,12 +2854,17 @@ function ScoreCtrl({
   function mount() { root.render(React.createElement(App, {key: _v})); }
   mount();
   if (_fbdb) {
+    let _remountTimer;
     _fbdb.collection('flipbad').doc('shared').onSnapshot(snap => {
       if (!snap.exists) return;
       const d = snap.data();
-      if (d._by === _SESSION) return; // our own write, ignore
+      if (d._by === _SESSION) return;
       Object.assign(_cache, d);
-      _v++; mount();
+      clearTimeout(_remountTimer);
+      const ae = document.activeElement;
+      const isTyping = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA');
+      if (!isTyping) { _v++; mount(); }
+      else { _remountTimer = setTimeout(() => { _v++; mount(); }, 2500); }
     });
   }
 })();
