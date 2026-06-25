@@ -28,7 +28,7 @@ function save(key, val) {
   clearTimeout(_saveTimers[key]);
   _saveTimers[key] = setTimeout(() => {
     _fbdb.collection('flipbad').doc('shared')
-      .set({[key]: val, _by: _SESSION, _at: Date.now()}, {merge: true})
+      .set({[key]: val, [`_by_${key}`]: _SESSION}, {merge: true})
       .catch(console.error);
   }, 1200);
 }
@@ -282,12 +282,13 @@ function App() {
   useEffect(() => {
     function onRemote(e) {
       const d = e.detail;
-      if ('fb-registry' in d) setRegistry(d['fb-registry']);
-      if ('fb-tname' in d) setTName(d['fb-tname']);
-      if ('fb-format' in d) setFormat(d['fb-format']);
-      if ('fb-teams' in d) setTeams(d['fb-teams']);
-      if ('fb-matches' in d) setMatches(d['fb-matches']);
-      if ('fb-tinputs' in d) setTeamInputs(d['fb-tinputs']);
+      function mine(key) { return d[`_by_${key}`] === _SESSION; }
+      if ('fb-registry' in d && !mine('fb-registry')) setRegistry(d['fb-registry']);
+      if ('fb-tname' in d && !mine('fb-tname')) setTName(d['fb-tname']);
+      if ('fb-format' in d && !mine('fb-format')) setFormat(d['fb-format']);
+      if ('fb-teams' in d && !mine('fb-teams')) setTeams(d['fb-teams']);
+      if ('fb-matches' in d && !mine('fb-matches')) setMatches(d['fb-matches']);
+      if ('fb-tinputs' in d && !mine('fb-tinputs')) setTeamInputs(d['fb-tinputs']);
     }
     window.addEventListener('fb-remote', onRemote);
     return () => window.removeEventListener('fb-remote', onRemote);
@@ -2872,7 +2873,6 @@ function ScoreCtrl({
     _fbdb.collection('flipbad').doc('shared').onSnapshot(snap => {
       if (!snap.exists) return;
       const d = snap.data();
-      if (d._by === _SESSION) return;
       Object.assign(_cache, d);
       window.dispatchEvent(new CustomEvent('fb-remote', {detail: d}));
     });
