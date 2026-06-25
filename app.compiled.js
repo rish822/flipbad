@@ -6,21 +6,28 @@ const {
   useEffect
 } = React;
 
-// ── storage helpers ──────────────────────────────────────────────
-function _nameStore() {
-  try { return window.name ? JSON.parse(window.name) : {}; } catch { return {}; }
-}
-function _nameSet(store) {
-  try { window.name = JSON.stringify(store); } catch {}
-}
+// ── Firebase / storage ──────────────────────────────────────────
+const _SESSION = Math.random().toString(36).slice(2);
+const _cache = {};
+let _fbdb = null;
+const _FBCFG = {
+  apiKey: "AIzaSyD0WWz2ABsdfaBAn7dwcQJo8lnYGEMPlbE",
+  authDomain: "flipbad-264a5.firebaseapp.com",
+  projectId: "flipbad-264a5",
+  storageBucket: "flipbad-264a5.firebasestorage.app",
+  messagingSenderId: "926897169201",
+  appId: "1:926897169201:web:4e0e7846a1da17d81ec610"
+};
 function load(key, def) {
-  try { const v = localStorage.getItem(key); if (v != null) return JSON.parse(v); } catch {}
-  const ns = _nameStore(); if (key in ns) return ns[key];
-  return def;
+  return key in _cache ? _cache[key] : def;
 }
 function save(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
-  const ns = _nameStore(); ns[key] = val; _nameSet(ns);
+  _cache[key] = val;
+  if (_fbdb) {
+    _fbdb.collection('flipbad').doc('shared')
+      .set({[key]: val, _by: _SESSION, _at: Date.now()}, {merge: true})
+      .catch(console.error);
+  }
 }
 
 // ── constants ────────────────────────────────────────────────────
@@ -2782,4 +2789,26 @@ function ScoreCtrl({
     }
   }, "+")));
 }
-ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
+(async function initApp() {
+  const rootEl = document.getElementById("root");
+  rootEl.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#06040c;color:#a855f7;font-family:sans-serif;font-size:20px;letter-spacing:.05em;">🏸 Loading FlipBad...</div>';
+  try {
+    firebase.initializeApp(_FBCFG);
+    _fbdb = firebase.firestore();
+    const snap = await _fbdb.collection('flipbad').doc('shared').get();
+    if (snap.exists) Object.assign(_cache, snap.data());
+  } catch(e) { console.warn('Firebase unavailable, local mode:', e); }
+  const root = ReactDOM.createRoot(rootEl);
+  let _v = 0;
+  function mount() { root.render(React.createElement(App, {key: _v})); }
+  mount();
+  if (_fbdb) {
+    _fbdb.collection('flipbad').doc('shared').onSnapshot(snap => {
+      if (!snap.exists) return;
+      const d = snap.data();
+      if (d._by === _SESSION) return; // our own write, ignore
+      Object.assign(_cache, d);
+      _v++; mount();
+    });
+  }
+})();
