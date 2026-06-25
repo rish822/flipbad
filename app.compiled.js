@@ -278,6 +278,21 @@ function App() {
   useEffect(() => save("fb-matches", matches), [matches]);
   useEffect(() => save("fb-tinputs", teamInputs), [teamInputs]);
 
+  // Listen for remote Firestore updates without remounting
+  useEffect(() => {
+    function onRemote(e) {
+      const d = e.detail;
+      if ('fb-registry' in d) setRegistry(d['fb-registry']);
+      if ('fb-tname' in d) setTName(d['fb-tname']);
+      if ('fb-format' in d) setFormat(d['fb-format']);
+      if ('fb-teams' in d) setTeams(d['fb-teams']);
+      if ('fb-matches' in d) setMatches(d['fb-matches']);
+      if ('fb-tinputs' in d) setTeamInputs(d['fb-tinputs']);
+    }
+    window.addEventListener('fb-remote', onRemote);
+    return () => window.removeEventListener('fb-remote', onRemote);
+  }, []);
+
   // quick match (session only)
   const [qm, setQm] = useState(null);
 
@@ -2850,21 +2865,14 @@ function ScoreCtrl({
     if (snap.exists) Object.assign(_cache, snap.data());
   } catch(e) { console.warn('Firebase unavailable, local mode:', e); }
   const root = ReactDOM.createRoot(rootEl);
-  let _v = 0;
-  function mount() { root.render(React.createElement(App, {key: _v})); }
-  mount();
+  root.render(React.createElement(App, null));
   if (_fbdb) {
-    let _remountTimer;
     _fbdb.collection('flipbad').doc('shared').onSnapshot(snap => {
       if (!snap.exists) return;
       const d = snap.data();
       if (d._by === _SESSION) return;
       Object.assign(_cache, d);
-      clearTimeout(_remountTimer);
-      const ae = document.activeElement;
-      const isTyping = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA');
-      if (!isTyping) { _v++; mount(); }
-      else { _remountTimer = setTimeout(() => { _v++; mount(); }, 2500); }
+      window.dispatchEvent(new CustomEvent('fb-remote', {detail: d}));
     });
   }
 })();
