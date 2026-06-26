@@ -512,7 +512,7 @@ const Sty = {
     width: "100%",
     maxWidth: 480,
     margin: "0 auto",
-    padding: "10px 16px 16px",
+    padding: "10px 16px max(20px, env(safe-area-inset-bottom, 20px))",
     background: "linear-gradient(to top, #06040c 85%, transparent)"
   },
   card: {
@@ -1026,8 +1026,8 @@ function HomeScreen({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      justifyContent: "space-between",
-      padding: "clamp(12px,3vw,28px) 20px clamp(16px,3vw,28px)",
+      justifyContent: "flex-end",
+      padding: "0 20px clamp(16px,3vw,28px)",
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -1056,7 +1056,15 @@ function HomeScreen({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      marginBottom: 10,
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 8,
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("svg", {
@@ -1136,7 +1144,7 @@ function HomeScreen({
       textTransform: "uppercase",
       color: "#a78bfa"
     }
-  }, "FS Badminton Baddies")), /*#__PURE__*/React.createElement("div", {
+  }, "FS Badminton Baddies"))), /*#__PURE__*/React.createElement("div", {
     style: {
       width: 36,
       height: 1,
