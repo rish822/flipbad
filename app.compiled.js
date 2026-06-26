@@ -591,7 +591,15 @@ function App() {
     registry: registry,
     onHome: goHome,
     onNewTournament: goHome,
-    onOpenMatch: id => setMatchId(id)
+    onOpenMatch: id => setMatchId(id),
+    onAddMatch: (t1, t2, round) => {
+      setMatches(prev => {
+        const m = makeMatch(t1, t2, round || 'Extra');
+        const updated = [...prev, m];
+        saveNow('fb-matches', updated);
+        return updated;
+      });
+    }
   }), screen === "tournament-main" && matchInView && /*#__PURE__*/React.createElement(MatchScorer, {
     m: matchInView,
     teams: teams,
@@ -1570,9 +1578,14 @@ function TournamentMain({
   registry,
   onHome,
   onNewTournament,
-  onOpenMatch
+  onOpenMatch,
+  onAddMatch
 }) {
   const [tab, setTab] = useState("matches");
+  const [showAddMatch, setShowAddMatch] = useState(false);
+  const [addT1, setAddT1] = useState("");
+  const [addT2, setAddT2] = useState("");
+  const [addRound, setAddRound] = useState("Extra");
   const upcoming = matches.filter(m => m.status === "upcoming");
   const completed = matches.filter(m => m.status === "completed");
   const ptTable = useMemo(() => computePoints(teams, matches), [teams, matches]);
@@ -1626,6 +1639,14 @@ function TournamentMain({
       padding: "5px 11px"
     }
   }, "New"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setShowAddMatch(true),
+    style: {
+      ...Sty.ghost,
+      fontSize: 11,
+      padding: "5px 11px",
+      background: "rgba(168,85,247,.12)"
+    }
+  }, "+ Match"), /*#__PURE__*/React.createElement("button", {
     onClick: onHome,
     style: {
       ...Sty.ghost,
@@ -1638,7 +1659,52 @@ function TournamentMain({
       fontSize: 12,
       marginBottom: 14
     }
-  }, format, " · ", teams.length, " teams"), /*#__PURE__*/React.createElement("div", {
+  }, format, " · ", teams.length, " teams"),
+  showAddMatch && /*#__PURE__*/React.createElement("div", {
+    style:{background:P.bg2,border:`1px solid ${P.border}`,borderRadius:12,padding:"14px 16px",marginBottom:12}
+  },
+    /*#__PURE__*/React.createElement("div", {style:{color:P.white,fontWeight:700,fontSize:13,marginBottom:10}}, "Add Match"),
+    /*#__PURE__*/React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:8}},
+      /*#__PURE__*/React.createElement("select", {
+        value: addT1,
+        onChange: e => setAddT1(e.target.value),
+        style:{...Sty.input,fontSize:13}
+      },
+        /*#__PURE__*/React.createElement("option", {value:""}, "Team 1…"),
+        teams.map(t => /*#__PURE__*/React.createElement("option", {key:t.id||t.name,value:t.name}, t.name))
+      ),
+      /*#__PURE__*/React.createElement("select", {
+        value: addT2,
+        onChange: e => setAddT2(e.target.value),
+        style:{...Sty.input,fontSize:13}
+      },
+        /*#__PURE__*/React.createElement("option", {value:""}, "Team 2…"),
+        teams.filter(t=>t.name!==addT1).map(t => /*#__PURE__*/React.createElement("option", {key:t.id||t.name,value:t.name}, t.name))
+      ),
+      /*#__PURE__*/React.createElement("input", {
+        placeholder: "Round label (e.g. Semi-Final)",
+        value: addRound,
+        onChange: e => setAddRound(e.target.value),
+        style:{...Sty.input,fontSize:13}
+      }),
+      /*#__PURE__*/React.createElement("div", {style:{display:"flex",gap:8}},
+        /*#__PURE__*/React.createElement("button", {
+          style:{...Sty.heroBtn,flex:1,fontSize:13},
+          disabled: !addT1 || !addT2 || addT1===addT2,
+          onClick: () => {
+            onAddMatch(addT1, addT2, addRound || "Extra");
+            setAddT1(""); setAddT2(""); setAddRound("Extra");
+            setShowAddMatch(false);
+          }
+        }, "Add Match"),
+        /*#__PURE__*/React.createElement("button", {
+          style:{...Sty.ghost,fontSize:13},
+          onClick: () => setShowAddMatch(false)
+        }, "Cancel")
+      )
+    )
+  ),
+  /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       overflowX: "auto",
