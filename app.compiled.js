@@ -731,12 +731,12 @@ function HomeScreen({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      marginBottom: 6,
+      marginBottom: 10,
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "56",
-    height: "56",
+    width: "88",
+    height: "88",
     viewBox: "0 0 72 72",
     fill: "none"
   }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
@@ -787,9 +787,9 @@ function HomeScreen({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: "clamp(30px,8vw,42px)",
+      fontSize: "clamp(40px,11vw,56px)",
       fontWeight: 900,
-      letterSpacing: "-2px",
+      letterSpacing: "-2.5px",
       lineHeight: 1
     }
   }, /*#__PURE__*/React.createElement("span", {
@@ -862,10 +862,10 @@ function HomeScreen({
       background: AG,
       color: "#fff",
       fontWeight: 800,
-      fontSize: 14,
+      fontSize: 13,
       border: "none",
-      borderRadius: 13,
-      padding: "17px 20px",
+      borderRadius: 11,
+      padding: "11px 16px",
       cursor: "pointer",
       fontFamily: F,
       display: "flex",
@@ -876,7 +876,7 @@ function HomeScreen({
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 22,
+      fontSize: 18,
       flexShrink: 0
     }
   }, "🏆"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -897,10 +897,10 @@ function HomeScreen({
       background: "rgba(168,85,247,.1)",
       color: P.accentL,
       fontWeight: 700,
-      fontSize: 14,
+      fontSize: 13,
       border: `1px solid rgba(168,85,247,.35)`,
-      borderRadius: 13,
-      padding: "14px 20px",
+      borderRadius: 11,
+      padding: "10px 16px",
       cursor: "pointer",
       fontFamily: F,
       display: "flex",
@@ -910,7 +910,7 @@ function HomeScreen({
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 22,
+      fontSize: 18,
       flexShrink: 0
     }
   }, "▶"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -963,25 +963,25 @@ function HomePillBtn({
       color: active ? "#fff" : P.white,
       fontWeight: active ? 800 : 600,
       border: active ? "none" : `1px solid rgba(168,85,247,.28)`,
-      borderRadius: 13,
-      padding: "17px 20px",
+      borderRadius: 11,
+      padding: "10px 16px",
       cursor: "pointer",
       fontFamily: F,
       display: "flex",
       alignItems: "center",
-      gap: 12,
+      gap: 10,
       textAlign: "left",
       width: "100%",
       transition: "all .12s ease"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 22,
+      fontSize: 18,
       flexShrink: 0
     }
   }, icon), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: active ? 800 : 600
     }
   }, label), /*#__PURE__*/React.createElement("div", {
