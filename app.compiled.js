@@ -134,8 +134,8 @@ const P = {
   silverG: "linear-gradient(135deg,#475569,#f1f5f9)",
   bronzeG: "linear-gradient(135deg,#9a3412,#fb923c)",
   white: "#fce7f3",
-  sub: "#6b21a8",
-  dim: "#2d1b4e",
+  sub: "#c084fc",
+  dim: "#9f7aea",
   red: "#fb7185",
   green: "#86efac"
 };
@@ -551,7 +551,7 @@ function App() {
     setMessages: setSledgeMessages,
     registry: registry,
     onHome: goHome,
-    onNewTournament: resetTournament,
+    onNewTournament: goHome,
     onOpenMatch: id => setMatchId(id)
   }), screen === "tournament-main" && matchInView && /*#__PURE__*/React.createElement(MatchScorer, {
     m: matchInView,
