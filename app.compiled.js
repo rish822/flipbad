@@ -701,8 +701,9 @@ function HomeScreen({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      justifyContent: "flex-end",
-      padding: "0 20px clamp(16px,3vw,28px)",
+      justifyContent: "center",
+      gap: "clamp(10px,3vh,24px)",
+      padding: "clamp(10px,2vh,20px) 20px clamp(10px,2vh,20px)",
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -731,11 +732,9 @@ function HomeScreen({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      flex: 1,
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center"
+      alignItems: "center"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -824,11 +823,11 @@ function HomeScreen({
       width: 36,
       height: 1,
       background: `linear-gradient(90deg,transparent,${P.accent},transparent)`,
-      margin: "8px 0 10px"
+      margin: "4px 0 6px"
     }
   }),
   hasTournament && matches && matches.length > 0 && /*#__PURE__*/React.createElement("div", {
-    style:{width:"100%",maxWidth:310,marginBottom:8,background:"rgba(109,40,217,.13)",border:"1px solid rgba(168,85,247,.25)",borderRadius:12,padding:"10px 14px"}
+    style:{width:"100%",maxWidth:310,marginBottom:4,background:"rgba(109,40,217,.13)",border:"1px solid rgba(168,85,247,.25)",borderRadius:12,padding:"10px 14px"}
   },
     /*#__PURE__*/React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}},
       /*#__PURE__*/React.createElement("span", {style:{color:"#a855f7",fontWeight:700,fontSize:13}}, "🏆 ", tName || "Tournament"),
@@ -862,7 +861,7 @@ function HomeScreen({
       maxWidth: 310,
       display: "flex",
       flexDirection: "column",
-      gap: 7
+      gap: 5
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: onTournament,
